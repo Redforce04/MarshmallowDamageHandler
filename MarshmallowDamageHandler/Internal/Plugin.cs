@@ -9,12 +9,15 @@
 //    Revision Date:    10/30/2023 1:17 AM
 //    Created Date:     10/30/2023 1:17 AM
 // -----------------------------------------
-
+#if EXILED
 using Exiled.API.Features;
+using PluginPriority = Exiled.API.Enums.PluginPriority;
+#endif
+
 using PluginAPI.Core.Attributes;
+using PluginAPI.Core;
 using PluginAPI.Enums;
 using PluginAPI.Events;
-using PluginPriority = Exiled.API.Enums.PluginPriority;
 
 namespace MarshmallowDamageHandler.Internal;
 #if EXILED
@@ -41,6 +44,7 @@ public class Plugin
     public void OnEnabled()
 #endif
     {
+        Log.Info($"MarshmallowDamageFixes is ready.{(Config.Debug ? " [Debug]" : "")}");
         Singleton = this;
         Api.InitDependencies();
         EventManager.RegisterEvents(this);
@@ -49,19 +53,36 @@ public class Plugin
     [PluginEvent(ServerEventType.PlayerDamage)]
     internal bool OnPlayerDamage(PlayerDamageEvent ev)
     {
-        if(ev.DamageHandler is MarshmallowDamageHandler)
+        if (ev is null)
             return true;
+        //if (ev.Player is null)
+        //    return true;
+        if (ev.Target is null)
+            return true;
+        if (ev.DamageHandler is null)
+            return true;
+            
+        if (Config.Debug) Log.Debug($"damage detected {ev.DamageHandler.GetType().FullName}");
+
+        if(ev.DamageHandler is not MarshmallowDamageHandler marsh)
+            return true;
+        Player? player = ev.Player ?? marsh.Player;
         if (Config.Debug)
-            Log.Debug($"Marshmallow damage detected. {ev.Player.Nickname} -> {ev.Target.Nickname}");
-        
-        if (Config.MakeMarshmallowRespectFriendlyFire)
+            Log.Debug($"Marshmallow damage detected. {player.Nickname} -> {ev.Target.Nickname}");
+        if (player is null)
+        {
+            if (Config.Debug)
+                Log.Debug($"Marshmallow damage detected. Player still null");
+            return false;
+        }
+        if (!Config.MakeMarshmallowRespectFriendlyFire)
             return true;
         
-        if(!PluginAPI.Core.Server.FriendlyFire) 
+        if(PluginAPI.Core.Server.FriendlyFire) 
             return true; 
         
         
-        if (ev.Player.Team == ev.Target.Team);
+        if (player.Team == ev.Target.Team);
         {
             if(Config.Debug)
                 Log.Debug($"Marshmallow damage blocked.");

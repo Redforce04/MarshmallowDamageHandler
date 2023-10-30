@@ -11,7 +11,9 @@
 // -----------------------------------------
 
 using System.ComponentModel;
+#if EXILED
 using Exiled.API.Interfaces;
+#endif
 
 namespace MarshmallowDamageHandler.Internal;
 #if EXILED
@@ -20,10 +22,13 @@ public class Config : IConfig
 public class Config
 #endif
 {
-    [Description("Should this plugin be enabled. This will not stop plugins from using the included api, as long as they initialize it.")]
-    public bool IsEnabled { get; set; }
+    [Description(
+        "Should this plugin be enabled. This will not stop plugins from using the included api, as long as they initialize it.")]
+    public bool IsEnabled { get; set; } = true;
+
     [Description("Should debug logs be shown.")]
-    public bool Debug { get; set; }
+    public bool Debug { get; set; } = false;
+
     [Description("Should the marshmallow effect, follow the server friendlyfire settings.")]
-    public bool MakeMarshmallowRespectFriendlyFire { get; set; }
+    public bool MakeMarshmallowRespectFriendlyFire { get; set; } = true;
 }

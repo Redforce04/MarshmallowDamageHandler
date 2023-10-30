@@ -11,14 +11,20 @@
 // -----------------------------------------
 
 using PlayerStatsSystem;
+using PluginAPI.Core;
 
 namespace MarshmallowDamageHandler;
 
 public sealed class MarshmallowDamageHandler : UniversalDamageHandler
 {
-    public MarshmallowDamageHandler(float damage, DeathTranslation deathReason, CassieAnnouncement? cassieAnnouncement = null) : base(damage, deathReason, cassieAnnouncement) { }
+    public MarshmallowDamageHandler(float damage, DeathTranslation deathReason,
+        CassieAnnouncement? cassieAnnouncement = null, Player? ply = null) : base(damage, deathReason, cassieAnnouncement)
+    {
+        Player = ply;
+    }
 
     public MarshmallowDamageHandler() : base()
     { }
+    public Player? Player { get; set; }
     
 }

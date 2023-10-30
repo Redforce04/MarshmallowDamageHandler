@@ -6,6 +6,11 @@ public class Api
 {
     internal static bool Initialized { get; set; } = false;
     internal static Harmony Harmony { get; set; }
+
+    /// <summary>
+    /// Should the plugin send a crosshair if friendly fire is used, and friendly fire is off.
+    /// </summary>
+    public static bool SendCrosshairIfFriendlyFire { get; set; } = false;
     public static void InitDependencies()
     {
         if (Initialized)
