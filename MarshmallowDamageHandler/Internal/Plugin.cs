@@ -19,6 +19,8 @@ using PluginAPI.Core.Attributes;
 using PluginAPI.Core;
 using PluginAPI.Enums;
 using PluginAPI.Events;
+using Log = PluginAPI.Core.Log;
+using Player = PluginAPI.Core.Player;
 
 namespace MarshmallowDamageHandler.Internal;
 #if EXILED
