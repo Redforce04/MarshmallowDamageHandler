@@ -31,4 +31,7 @@ public class Config
 
     [Description("Should the marshmallow effect, follow the server friendlyfire settings.")]
     public bool MakeMarshmallowRespectFriendlyFire { get; set; } = true;
+
+    [Description("Should killing a cuffed teammate count as tk.")]
+    public bool CountCuffed { get; set; } = true;
 }

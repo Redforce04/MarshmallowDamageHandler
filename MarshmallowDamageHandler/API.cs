@@ -11,6 +11,10 @@ public class Api
     /// Should the plugin send a crosshair if friendly fire is used, and friendly fire is off.
     /// </summary>
     public static bool SendCrosshairIfFriendlyFire { get; set; } = false;
+    /// <summary>
+    /// Should killing a cuffed teammate count as tk.
+    /// </summary>
+    public static bool CountCuffed { get; set; } = true;
     public static void InitDependencies()
     {
         if (Initialized)

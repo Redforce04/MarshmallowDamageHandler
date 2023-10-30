@@ -33,9 +33,9 @@ internal static class ProcessMarshmallowDamage
                 if (item is HitboxIdentity hitboxIdentity2 && !hitboxIdentity2.TargetHub.IsAlive())
                 {
                     __instance.Owner.playerEffectsController.GetEffect<SugarCrave>().OnKill();
-                    hitbox = !(!Server.FriendlyFire && __instance.Owner.GetTeam() == hitboxIdentity2.TargetHub.GetTeam()) ;
+                    hitbox = (Server.FriendlyFire || !Plugin.IsFF(__instance.Owner.GetRoleId(), hitboxIdentity2.TargetHub.GetRoleId(), Api.CountCuffed)) ;
                 }
-                if(hitbox)
+                if(!Api.SendCrosshairIfFriendlyFire || hitbox)
                     Hitmarker.SendHitmarkerDirectly(__instance.Owner, 1f);
                 
                 __instance.ServerSendPublicRpc(delegate(NetworkWriter writer)
