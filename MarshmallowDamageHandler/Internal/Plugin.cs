@@ -71,7 +71,7 @@ public class Plugin
         if(ev.DamageHandler is not MarshmallowDamageHandler marsh)
             return true;
         Player? player = ev.Player ?? marsh.Player;
-        if (Config.Debug)
+        if (Config.Debug) 
             Log.Debug($"Marshmallow damage detected. {player.Nickname} [{player.Team}]-> {ev.Target.Nickname}");
         if (player is null)
         {
