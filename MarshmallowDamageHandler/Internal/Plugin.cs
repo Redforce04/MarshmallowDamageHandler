@@ -15,6 +15,8 @@ using PluginPriority = Exiled.API.Enums.PluginPriority;
 #endif
 
 using PlayerRoles;
+using PlayerRoles.PlayableScps.Scp3114;
+using PlayerStatsSystem;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Core;
 using PluginAPI.Enums;
@@ -57,43 +59,45 @@ public class Plugin
     [PluginEvent(ServerEventType.PlayerDamage)]
     internal bool OnPlayerDamage(PlayerDamageEvent ev)
     {
-        if (ev is null)
+        try
+        {
+            if (ev.Target is null)
+                return true;
+            if (ev.DamageHandler is null)
+                return true;
+
+            if (!ev.DamageHandler.IsMarshmallowDamageHandler())
+                return true;
+
+            if (ev.DamageHandler is not ScpDamageHandler scp)
+                return true;
+            
+            Player? player = ev.Player ?? Player.Get(scp.Attacker.Hub);
+            if (player is null)
+                return false;
+
+            if (!Config.MakeMarshmallowRespectFriendlyFire)
+                return true;
+
+            if (Server.FriendlyFire)
+                return true;
+
+
+            if (IsFF(player.Role, ev.Target.Role, Api.CountCuffed))
+                return false;
+            
             return true;
-        //if (ev.Player is null)
-        //    return true;
-        if (ev.Target is null)
-            return true;
-        if (ev.DamageHandler is null)
+        }
+        catch (Exception e)
+        {
+            Log.Error($"An error has occured while catching damage handlers.");
+            Log.Debug($"Error: {e}");
             return true;
             
-        if (Config.Debug) Log.Debug($"damage detected {ev.DamageHandler.GetType().FullName}");
-
-        if(ev.DamageHandler is not MarshmallowDamageHandler marsh)
-            return true;
-        Player? player = ev.Player ?? marsh.Player;
-        if (Config.Debug) 
-            Log.Debug($"Marshmallow damage detected. {player.Nickname} [{player.Team}]-> {ev.Target.Nickname}");
-        if (player is null)
-        {
-            if (Config.Debug)
-                Log.Debug($"Marshmallow damage detected. Player still null");
-            return false;
         }
-        if (!Config.MakeMarshmallowRespectFriendlyFire)
-            return true;
-        
-        if(PluginAPI.Core.Server.FriendlyFire) 
-            return true; 
-        
-        
-        if (IsFF(player.Role, ev.Target.Role, Api.CountCuffed))
-        {
-            if(Config.Debug)
-                Log.Debug($"Marshmallow damage blocked. {player.Role} -> {ev.Target.Role}");
-            return false;
-        }
-        return true;
     }
+
+    
 
     internal static bool IsFF(RoleTypeId role1, RoleTypeId role2, bool countCuffed)
     {

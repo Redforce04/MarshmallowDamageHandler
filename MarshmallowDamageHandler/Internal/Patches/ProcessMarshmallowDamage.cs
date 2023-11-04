@@ -17,6 +17,7 @@ using Mirror;
 using PlayerRoles;
 using PlayerStatsSystem;
 using PluginAPI.Core;
+using Subtitles;
 
 namespace MarshmallowDamageHandler.Internal.Patches;
 
@@ -25,38 +26,50 @@ internal static class ProcessMarshmallowDamage
 {
     internal static bool Prefix(MarshmallowItem __instance, ReferenceHub syncTarget)
     {
-        foreach (IDestructible item in __instance.DetectDestructibles())
+        try
         {
-            if ((!(item is HitboxIdentity hitboxIdentity) || !(hitboxIdentity.TargetHub != syncTarget)) && item.Damage(__instance._attackDamage, _getDamageHandler(__instance.NewDamageHandler, Player.Get(__instance.Owner)), item.CenterOfMass))
+
+            foreach (IDestructible item in __instance.DetectDestructibles())
             {
-                bool hitbox = true;
-                if (item is HitboxIdentity hitboxIdentity2 && !hitboxIdentity2.TargetHub.IsAlive())
+                if ((!(item is HitboxIdentity hitboxIdentity) || !(hitboxIdentity.TargetHub != syncTarget)) &&
+                    item.Damage(__instance._attackDamage,
+                        _getDamageHandler(__instance.Owner, __instance._attackDamage),
+                        item.CenterOfMass))
                 {
-                    __instance.Owner.playerEffectsController.GetEffect<SugarCrave>().OnKill();
-                    hitbox = (Server.FriendlyFire || !Plugin.IsFF(__instance.Owner.GetRoleId(), hitboxIdentity2.TargetHub.GetRoleId(), Api.CountCuffed)) ;
+                    bool hitbox = true;
+                    if (item is HitboxIdentity hitboxIdentity2 && !hitboxIdentity2.TargetHub.IsAlive())
+                    {
+                        __instance.Owner.playerEffectsController.GetEffect<SugarCrave>().OnKill();
+                        hitbox = (Server.FriendlyFire || !Plugin.IsFF(__instance.Owner.GetRoleId(),
+                            hitboxIdentity2.TargetHub.GetRoleId(), Api.CountCuffed));
+                    }
+
+                    if (!Api.SendCrosshairIfFriendlyFire || hitbox)
+                        Hitmarker.SendHitmarkerDirectly(__instance.Owner, 1f);
+
+                    __instance.ServerSendPublicRpc(delegate(NetworkWriter writer) { writer.WriteByte(1); });
+                    break;
                 }
-                if(!Api.SendCrosshairIfFriendlyFire || hitbox)
-                    Hitmarker.SendHitmarkerDirectly(__instance.Owner, 1f);
-                
-                __instance.ServerSendPublicRpc(delegate(NetworkWriter writer)
-                {
-                    writer.WriteByte(1);
-                });
-                break;
             }
+
+        }
+        catch (Exception e)
+        {
+            Log.Error("A critical error has occured while processing marshmallow damage.");
+            Log.Debug($"Exception: \n{e}");
         }
 
         return false;
     }
 
-    private static UniversalDamageHandler _getDamageHandler(UniversalDamageHandler handler, Player ply)
+    private static DamageHandlerBase _getDamageHandler(ReferenceHub attacker, float damage)
     {
-        if (handler is MarshmallowDamageHandler marsh)
+        DamageHandlerBase damageHandler = new ScpDamageHandler(attacker, damage, DeathTranslations.MarshmallowMan);
+        damageHandler.CassieDeathAnnouncement.Announcement = "TERMINATED BY MARSHMALLOW MAN";
+        damageHandler.CassieDeathAnnouncement.SubtitleParts = new SubtitlePart[1]
         {
-            marsh.Player = ply;
-            return marsh;
-        }
-
-        return handler;
+            new SubtitlePart(SubtitleType.TerminatedByMarshmallowMan)
+        };
+        return damageHandler;
     }
 }

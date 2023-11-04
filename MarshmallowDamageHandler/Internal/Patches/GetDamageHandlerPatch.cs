@@ -17,20 +17,19 @@ using Subtitles;
 
 namespace MarshmallowDamageHandler.Internal.Patches;
 
+/*
 [HarmonyPatch(typeof(InventorySystem.Items.MarshmallowMan.MarshmallowItem), nameof(InventorySystem.Items.MarshmallowMan.MarshmallowItem.NewDamageHandler), MethodType.Getter)]
 internal static class GetDamageHandlerPatch
 {
     internal static bool Prefix(MarshmallowItem __instance, ref UniversalDamageHandler __result)
     {
-        __result = new MarshmallowDamageHandler(__instance._attackDamage, DeathTranslations.MarshmallowMan, new DamageHandlerBase.CassieAnnouncement
+        __result = new ScpDamageHandler(__instance.Owner, __instance._attackDamage, DeathTranslations.MarshmallowMan);
+        __result.CassieDeathAnnouncement.Announcement = "TERMINATED BY MARSHMALLOW MAN";
+        __result.CassieDeathAnnouncement.SubtitleParts = new SubtitlePart[1]
         {
-            Announcement = "TERMINATED BY MARSHMALLOW MAN",
-            SubtitleParts = new SubtitlePart[1]
-            {
-                new SubtitlePart(SubtitleType.TerminatedByMarshmallowMan, (string[])null)
-            }
-        });
+            new SubtitlePart(SubtitleType.TerminatedByMarshmallowMan)
+        };
 
-        return false;
+            return false;
     }
-}
+}*/

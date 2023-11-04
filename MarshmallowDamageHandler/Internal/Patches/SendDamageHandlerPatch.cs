@@ -17,7 +17,7 @@ using PluginAPI.Core;
 using DamageHandlerBase = PlayerStatsSystem.DamageHandlerBase;
 
 namespace MarshmallowDamageHandler.Internal.Patches;
-
+/*
 [HarmonyPatch(typeof(PlayerStatsSystem.DamageHandlerReaderWriter), nameof(PlayerStatsSystem.DamageHandlerReaderWriter.WriteDamageHandler))]
 internal static class SendDamageHandlerPatch
 {
@@ -40,4 +40,4 @@ internal static class SendDamageHandlerPatch
 
         return false;
     }
-}
+}*/
