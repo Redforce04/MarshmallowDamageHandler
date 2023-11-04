@@ -23,6 +23,7 @@ using PluginAPI.Enums;
 using PluginAPI.Events;
 using Log = PluginAPI.Core.Log;
 using Player = PluginAPI.Core.Player;
+using Server = PluginAPI.Core.Server;
 
 namespace MarshmallowDamageHandler.Internal;
 #if EXILED
@@ -31,7 +32,7 @@ public class Plugin : Plugin<Config>
 public class Plugin
 #endif
 {
-    public const string PluginVersion = "1.0.0";
+    public const string PluginVersion = "1.1.0";
     public static Plugin Singleton { get; private set; }
     
 #if EXILED
